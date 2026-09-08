@@ -1,0 +1,14 @@
+\contentsline {chapter}{Pernyataan Orisinalitas}{1}{chapter*.2}%
+\contentsline {chapter}{\numberline {1}Pendahuluan}{2}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Latar Belakang}{2}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Ringkasan Soal}{2}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Ketentuan Pengerjaan}{2}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Problem Set (Wajib)}{3}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Beast Metropolis}{3}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Horizon Chartreuse}{5}{section.2.2}%
+\contentsline {section}{\numberline {2.3}Domain of Hopes and Dreams}{6}{section.2.3}%
+\contentsline {section}{\numberline {2.4}Trinitarian Rhapsody}{9}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Silent Goddess}{11}{section.2.5}%
+\contentsline {chapter}{\numberline {3}Problem Set (Bonus)}{12}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Ex Machina}{12}{section.3.1}%
+\contentsline {chapter}{Referensi}{16}{section*.48}%
