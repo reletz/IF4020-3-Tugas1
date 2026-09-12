@@ -32,10 +32,202 @@ monoalfabetik ini.
 
 \subsection*{Langkah Penyelesaian}
 
+\textit{Monoalphabetic cipher} rentan terhadap analisis frekuensi. Jika kriptanalis mendapatkan
+frekuensi yang mendekati distribusi huruf pada kata-kata di Bahasa Inggris, sebuah \textit{ciphertext}
+dapat diterka dengan mencocokan monogram, bigram, bahkan hingga trigram.
+
+\subsubsection*{Langkah-langkah yang dilakukan:}
+\begin{enumerate}
+  \item Lakukan penghitungan frekuensi monogram pada \textit{ciphertext}.
+
+  \begin{center}
+    \includegraphics[width=0.45\linewidth]{21_monogram_map.png}
+  \end{center}
+
+  Kita dapatkan pemetaan (kasar) berikut:
+
+  \begin{center}
+    \begin{tabular}{|c|c|}
+      \hline
+      cipher & ABCDEFGHIJKLMNOPQRSTUVWXYZ \\
+      \hline
+      plain & SGNIKPQBOJDZUFWRETYHACVMXL \\
+      \hline
+    \end{tabular}
+  \end{center}
+
+  \item Untuk memperkuat dasar pencocokan, hitung juga frekuensi bigram dan
+  trigram pada \textit{ciphertext} (\texttt{freq\_ngram(ciphertext, n)}
+  dengan $n=1,2,3$), lalu bandingkan sepuluh besarnya dengan referensi
+  Bahasa Inggris.
+
+  \begin{center}
+    \small
+    \begin{tabular}{|c|c|c||c|c|}
+      \hline
+      \multicolumn{5}{|c|}{Monogram} \\
+      \hline
+      Peringkat & Cipher & Freq (\%) & Referensi & Freq (\%) \\
+      \hline
+      1 & Q & 12.31 & E & 12.02 \\
+      2 & R & 9.27  & T & 9.10 \\
+      3 & U & 8.83  & A & 8.12 \\
+      4 & I & 8.60  & O & 7.68 \\
+      5 & D & 8.06  & I & 7.31 \\
+      6 & C & 6.64  & N & 6.95 \\
+      7 & A & 6.10  & S & 6.28 \\
+      8 & P & 5.61  & R & 6.02 \\
+      9 & T & 4.30  & H & 5.92 \\
+      10 & K & 3.56 & D & 4.32 \\
+      \hline
+    \end{tabular}
+  \end{center}
+
+  \begin{center}
+    \small
+    \begin{tabular}{|c|c|c||c|c|}
+      \hline
+      \multicolumn{5}{|c|}{Bigram} \\
+      \hline
+      Peringkat & Cipher & Freq (\%) & Referensi & Freq (\%) \\
+      \hline
+      1 & RP & 3.88 & TH & 3.56 \\
+      2 & PQ & 2.99 & HE & 3.07 \\
+      3 & CI & 2.21 & IN & 2.43 \\
+      4 & UI & 1.83 & ER & 2.05 \\
+      5 & QI & 1.80 & AN & 1.99 \\
+      6 & AQ & 1.70 & RE & 1.85 \\
+      7 & IR & 1.64 & ON & 1.76 \\
+      8 & QA & 1.49 & AT & 1.49 \\
+      9 & DI & 1.42 & EN & 1.45 \\
+      10 & IK & 1.39 & ND & 1.35 \\
+      \hline
+    \end{tabular}
+  \end{center}
+
+  \begin{center}
+    \small
+    \begin{tabular}{|c|c|c||c|c|}
+      \hline
+      \multicolumn{5}{|c|}{Trigram} \\
+      \hline
+      Peringkat & Cipher & Freq (\%) & Referensi & Freq (\%) \\
+      \hline
+      1 & RPQ & 2.91 & THE & 1.81 \\
+      2 & UIK & 1.03 & AND & 0.73 \\
+      3 & QIR & 0.62 & ING & 0.72 \\
+      4 & MZI & 0.62 & ENT & 0.42 \\
+      5 & DMR & 0.61 & ION & 0.42 \\
+      6 & MRP & 0.61 & HER & 0.36 \\
+      7 & IRP & 0.59 & FOR & 0.34 \\
+      8 & CIS & 0.56 & THA & 0.33 \\
+      9 & QAQ & 0.52 & NTH & 0.33 \\
+      10 & KRP & 0.51 & INT & 0.32 \\
+      \hline
+    \end{tabular}
+  \end{center}
+
+  Bentuk distribusinya memang tidak identik urutan-per-urutan, tetapi tiga huruf/pasangan/tripel tersering pada
+  \textit{ciphertext} (Q, R, U dan RP, PQ dan RPQ) menempati rentang
+  persentase yang sebanding dengan huruf/pasangan/tripel tersering Bahasa
+  Inggris (E, T, A dan TH, HE dan THE). Hal ini konsisten dengan hipotesis awal
+  bahwa \textit{cipher}-nya adalah substitusi abjad-tunggal murni terhadap
+  teks Bahasa Inggris, sehingga pencocokan berbasis frekuensi dapat
+  dilanjutkan.
+
+  \item Lakukan substitusi berdasarkan pemetaan (kasar) yang telah dibuat.
+  \ciphertextfile{../../src/21/log/plain/2026-09-08_174308.txt}
+
+  \item Cocokkan melalui informasi kecocokan bigram dan trigram, lalu
+  lanjutkan dengan iterasi yang sama: setiap kali sebuah bigram/trigram/kata
+  umum Bahasa Inggris mulai terlihat pada hasil dekripsi sementara, huruf
+  \textit{cipher} yang bersangkutan diganti agar sesuai. Tiga huruf -- R, Q, U -- sudah benar sejak tebakan awal
+  (langkah 1) dan tidak pernah diubah lagi. Untuk sisanya, dapat dilihat pada tabel di bawah
+  yang disusun berdasarkan \textit{log} dari \texttt{src/21/log/plain/} secara kronologis.
+
+  \begin{center}
+    \footnotesize
+    \begin{tabular}{|c|p{7.2cm}|p{5.3cm}|}
+      \hline
+      Ganti & Konteks (sebelum $\to$ sesudah) & Petunjuk \\
+      \hline
+      P$\to$H & \texttt{AUTESTREFNDONOETEEOTR} $\to$ \texttt{AUTESTHEFNDONOETEEOTH} & delapan karakter pertama UMRQARPQ $\to$ AUTESTHE, trigram \textbf{THE} \\
+      \hline
+      I$\to$N & \texttt{UTESTHEFNDONOETEEOTHCEOTL} $\to$ \texttt{UTESTHEFNDNNNETEENTHCENTL} & mengarah ke \textbf{NINETEENTH} \\
+      \hline
+      C$\to$I & \texttt{AUTESTHEFNDNNNETEENTHCEN} $\to$ \texttt{AUTESTHEFIDNINETEENTHCEN} & kata \textbf{NINETEENTH} terbentuk \\
+      \hline
+      A$\to$R & \texttt{AUTESTHEFIDNINETEEN} $\to$ \texttt{AUTERTHEFIDNINETEEN} & bigram \texttt{ER} \\
+      \hline
+      Z$\to$U & \texttt{TEENTHCENTLSGMASYEHCAMEXE} $\to$ \texttt{TEENTHCENTURYMARYEHCAMEXE} & mengarah ke \textbf{CENTURY} \\
+      \hline
+      B$\to$Y & \texttt{ENTHCENTLSGMASYEHCAMEXENW} $\to$ \texttt{ENTHCENTURYMARYEHCAMEXENW} & kata \textbf{CENTURY} lengkap \\
+      \hline
+      M$\to$F & \texttt{AUTERTHEFIDNINET} $\to$ \texttt{AFTERTHEFIDNINET} & kata umum \textbf{AFTER THE} \\
+      \hline
+      N$\to$M & \texttt{AFTERTHEFIDNINETEENTHCE} $\to$ \texttt{AFTERTHEMIDNINETEENTHCE} & kata \textbf{MID} (AFTER THE MID-...) \\
+      \hline
+      D$\to$O & \texttt{EHCAMEXENPIPIENFUNBEYANTI} $\to$ \texttt{EHCAMEXENPOPOENFUNBEYANTO} & mengarah ke \textbf{ZENPOKOENFUN} \\
+      \hline
+      T$\to$S & \texttt{NTURYMARSEHCAMEXENPOPOENF} $\to$ \texttt{NTURYMARYESCAMEXENPOPOENF} & bigram \texttt{ES} \\
+      \hline
+      F$\to$K & \texttt{SCAPEXENPOPOENFUNBEYANTOA} $\to$ \texttt{SCAPEXENPOKOENFUNBEYANTOA} & mengarah ke \textbf{ZENPOKOEN} \\
+      \hline
+      S$\to$G & \texttt{CENTURYPARYESCAPEXENPOKOE} $\to$ \texttt{CENTURYPARGESCAPEXENPOKOE} & kata \textbf{LARGE} \\
+      \hline
+      O$\to$P & \texttt{GESCAPEXENLOKOENFUNBEGANT} $\to$ \texttt{GESCAPEXENPOKOENFUNBEGANT} & kata \textbf{ZENPOKOEN} \\
+      \hline
+      X$\to$L & \texttt{NTHCENTURYPARGESCAPEXENPO} $\to$ \texttt{NTHCENTURYLARGESCALEXENPO} & kata \textbf{LARGE SCALE} \\
+      \hline
+      W$\to$W & \texttt{TOAPPEARINGESTERNQAPANEJA} $\to$ \texttt{TOAPPEARINWESTERNJAPANEXA} & kata \textbf{IN WESTERN} \\
+      \hline
+      G$\to$J & \texttt{RINGESTERNQAPANEJAMPLESOF} $\to$ \texttt{RINWESTERNJAPANEXAMPLESOF} & kata \textbf{JAPAN} \\
+      \hline
+      J$\to$X & \texttt{TERNQAPANEJAMPLESOFKANSAI} $\to$ \texttt{TERNJAPANEXAMPLESOFKANSAI} & kata \textbf{EXAMPLES} \\
+      \hline
+      Y$\to$Z & \texttt{LARGESCALEXENPOKOENFUNBEG} $\to$ \texttt{LARGESCALEZENPOKOENFUNBEG} & istilah \textbf{ZENPOKOENFUN} terbentuk \\
+      \hline
+      E$\to$V & \texttt{WEREMOSTLYKERTICALCAKESTY} $\to$ \texttt{WEREMOSTLYVERTICALCAVESTY} & kata \textbf{VERTICAL CAVE} \\
+      \hline
+      L$\to$Q & \texttt{LARGESZUAREANDCIR} $\to$ \texttt{LARGESQUAREANDCIR} & kata \textbf{SQUARE} \\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{enumerate}
+
+
 \subsection*{Artefak}
+
+Skrip \textit{solver} yang digunakan untuk menghitung frekuensi
+monogram/bigram/trigram, menyusun tebakan awal, menerapkan pemetaan hasil
+analisis, serta mencatat setiap hasil dekripsi ke \texttt{log/plain/} dan
+metadatanya (pemetaan \& frekuensi n-gram) ke \texttt{log/metadata/}.
+Modul ini bergantung pada \texttt{src/frequencies.py} yang berisi tabel
+referensi frekuensi Bahasa Inggris (dipakai bersama untuk seluruh soal
+substitusi/Vigen\`ere pada laporan ini, sehingga isinya tidak diduplikasi
+di sini).
+
+\lstinputlisting[language=Python, basicstyle=\ttfamily\small, frame=single,
+  title=\texttt{src/21/solver.py}]{../../src/21/solver.py}
 
 \subsection*{\textit{Plaintext} Hasil Dekripsi}
 
+\ciphertextfile{../../src/21/log/plain/2026-09-12_114103.txt}
+
 \subsection*{Kunci}
 
+\begin{center}
+  \begin{tabular}{|c|c|}
+    \hline
+    cipher & ABCDEFGHIJKLMNOPQRSTUVWXYZ \\
+    \hline
+    plain & RYIOVKJBNXDQFMPHETGSACWLZU \\
+    \hline
+  \end{tabular}
+\end{center}
+
 \subsection*{Referensi}
+
+Tabel referensi frekuensi monogram, bigram, dan trigram Bahasa Inggris yang
+digunakan pada langkah-langkah di atas mengacu pada \cite{cornell-freq,
+case-ngram}.
