@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.3)  12 SEP 2026 12:44
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.6.3)  12 SEP 2026 17:37
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1029,12 +1029,12 @@ Overfull \hbox (2.0382pt too wide) in paragraph at lines 201--209
 
 (/usr/share/texmf-dist/tex/latex/listings/lstlang1.sty
 File: lstlang1.sty 2025/11/14 1.11b listings language file
-) (../../src/21/solver.py [8] [9]) [10]) (./contents/03-horizon-chartreuse.tex [11] [12]) (./contents/04-domain-of-hopes-and-dreams.tex [13] [14] [15]) (./contents/05-trinitarian-rhapsody.tex [16]) (./contents/06-silent-goddess.tex [17]
+) (../../src/21/solver.py [8] [9]) [10]) (./contents/03-horizon-chartreuse.tex [11] [12]) (./contents/04-domain-of-hopes-and-dreams.tex [13] [14] [15]) (./contents/05-trinitarian-rhapsody.tex [16] [17]) (./contents/06-silent-goddess.tex
 Overfull \hbox (4.46762pt too wide) in paragraph at lines 15--20
 []\T1/cmr/m/n/10 Bantulah Marisa merekon-struksi ma-triks kunci meng-gu-nakan petun-juk awal \T1/cmr/m/it/10 plain-text \T1/cmr/m/n/10 terse-but melalui \T1/cmr/bx/it/10 Known
  []
 
-) (./contents/07-ex-machina.tex [18]
+) (./contents/07-ex-machina.tex [18] [19]
 Bab 3.
 
 Overfull \hbox (0.72554pt too wide) in paragraph at lines 19--23
@@ -1042,9 +1042,9 @@ Overfull \hbox (0.72554pt too wide) in paragraph at lines 19--23
  []
 
 Package hyperref Info: bookmark level for unknown lstlisting defaults to 0 on input line 37.
-(../../src/31/enigma-machine/secret.txt) [19
+(../../src/31/enigma-machine/secret.txt) [20
 
-] [20] [21]) (./contents/08-referensi.tex [22]) [23
+] [21] [22]) (./contents/08-referensi.tex [23]) [24
 
 
 ] (build/main.aux)
@@ -1053,21 +1053,21 @@ LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 053A229BDF25072DE09E38303CBF2C4A;1937.
+(rerunfilecheck)             Checksum: 3F71DDB23040BF53143A1E0D4FF94100;1937.
  ) 
 Here is how much of TeX's memory you used:
- 41179 strings out of 469515
- 819335 string characters out of 5470808
+ 41182 strings out of 469515
+ 819359 string characters out of 5470808
  2556956 words of memory out of 5000000
  68833 multiletter control sequences out of 15000+600000
  651212 words of font info for 95 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  89i,13n,97p,12296b,2498s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbi1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbi1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx0800.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx2074.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0500.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfss1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt0800.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt0900.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
-Output written on build/main.pdf (25 pages, 865803 bytes).
+</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbi1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbi1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx0800.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx2074.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0500.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfss1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt0800.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt0900.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb>
+Output written on build/main.pdf (26 pages, 875550 bytes).
 PDF statistics:
- 754 PDF objects out of 1000 (max. 8388607)
- 673 compressed objects within 7 object streams
- 387 named destinations out of 1000 (max. 500000)
+ 765 PDF objects out of 1000 (max. 8388607)
+ 681 compressed objects within 7 object streams
+ 390 named destinations out of 1000 (max. 500000)
  135 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -27,6 +27,22 @@ direkonstruksi, dekripsikan seluruh dokumen rahasia tersebut.
 
 \subsection*{Langkah Penyelesaian}
 
+\textbf{Playfair \textit{Cipher}} sangat berkaitan dengan penggunaan bigram (karena aturan enkripsinya berpusat
+pada pemetaan bigram di sebuah matriks kunci $5 \times 5$). Kelemahan \textit{cipher} ini:
+
+\begin{itemize}
+  \item Rentan terhadap analisis frekuensi \textbf{bigram}, jika teks \textit{cipher} cukup panjang.
+  \item Bigram dan kebalikannya akan menghasilkan \textit{cipher} yang sama.
+\end{itemize}
+
+Oleh karenanya, kita dapat melakukan analisis frekuensi bigram, kemudian melakukan pencocokan bigram dan 
+frekuensinya. Dari sini, kita akan menyusun hipotesis kunci $5 \times 5$ yang tepat secara iteratif.
+
+\subsubsection*{Langkah-langkah yang dilakukan:}
+\begin{enumerate}
+  \item Lakukan penghitungan frekuensi bigram pada \textit{ciphertext}.
+\end{enumerate} 
+
 \subsection*{Artefak}
 
 \subsection*{\textit{Plaintext} Hasil Dekripsi}
