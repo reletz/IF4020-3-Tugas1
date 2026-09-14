@@ -1,1 +1,3 @@
 doc/laporan/build/*
+/__pycache__/
+*.pyc
