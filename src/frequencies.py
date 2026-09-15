@@ -35,6 +35,18 @@ TRIGRAM = {
     "ITS": 0.16, "TTH": 0.16, "ROM": 0.15, "AIN": 0.15, "PRO": 0.15,
 }
 
+QUADGRAM = {
+    "TION": 0.31, "NTHE": 0.27, "THER": 0.24, "THAT": 0.21, "OFTH": 0.19,
+    "FTHE": 0.19, "THES": 0.18, "WITH": 0.18, "INTH": 0.17, "ATIO": 0.17,
+    "OTHE": 0.16, "TTHE": 0.16, "DTHE": 0.15, "INGT": 0.15, "ETHE": 0.15,
+    "SAND": 0.14, "STHE": 0.14, "HERE": 0.13, "THEC": 0.13, "MENT": 0.12,
+    "THEM": 0.12, "RTHE": 0.12, "THEP": 0.11, "FROM": 0.10, "THIS": 0.10,
+    "TING": 0.10, "THEI": 0.10, "NGTH": 0.10, "IONS": 0.10, "ANDT": 0.10,
+    "ONTH": 0.09, "TOTH": 0.09, "EDTO": 0.09, "THEF": 0.09, "THEY": 0.09,
+    "HAVE": 0.09, "EDTH": 0.09, "INGA": 0.09, "NDTH": 0.09, "THET": 0.09,
+    "OULD": 0.08, "ORTH": 0.08, "EVER": 0.08, "THEN": 0.08, "IGHT": 0.08,
+}
+
 DOUBLES = ["LL", "EE", "SS", "OO", "TT", "FF", "RR", "NN", "PP", "CC", "MM", "DD", "GG"]
 
 COMMON_WORDS = {
@@ -55,6 +67,7 @@ COMMON_WORDS = {
 MONOGRAM_ORDER = list(MONOGRAM)
 BIGRAM_ORDER = list(BIGRAM)
 TRIGRAM_ORDER = list(TRIGRAM)
+QUADGRAM_ORDER = list(QUADGRAM)
 
 
 def ordered(freq: dict) -> list:
