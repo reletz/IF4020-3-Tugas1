@@ -32,21 +32,201 @@ pada pemetaan bigram di sebuah matriks kunci $5 \times 5$). Kelemahan \textit{ci
 
 \begin{itemize}
   \item Rentan terhadap analisis frekuensi \textbf{bigram}, jika teks \textit{cipher} cukup panjang.
-  \item Bigram dan kebalikannya akan menghasilkan \textit{cipher} yang sama.
+  \item Bigram dan kebalikannya akan menghasilkan \textit{cipher} yang saling berkaitan: jika bigram
+  plaintext $XY$ (baik hubungan searah baris, kolom, maupun \textit{rectangle}) dienkripsi menjadi
+  \textit{cipher} $PQ$, maka bigram kebalikannya $YX$ akan dienkripsi menjadi $QP$, kebalikan dari
+  \textit{cipher} sebelumnya.
 \end{itemize}
 
-Oleh karenanya, kita dapat melakukan analisis frekuensi bigram, kemudian melakukan pencocokan bigram dan 
-frekuensinya. Dari sini, kita akan menyusun hipotesis kunci $5 \times 5$ yang tepat secara iteratif.
+Penyelesaian soal ini dibagi menjadi dua tahap. Tahap pertama adalah \textbf{analisis frekuensi bigram
+secara manual} untuk menambatkan sebagian huruf pada matriks kunci. Tahap kedua adalah \textbf{pencarian
+otomatis dengan \textit{Simulated Annealing} (SA)} untuk melengkapi sel-sel yang tersisa, karena
+melanjutkan penebakan manual sel demi sel terlalu lambat dan mudah tersesat.
 
-\subsubsection*{Langkah-langkah yang dilakukan:}
+\subsubsection*{Tahap 1: Analisis Frekuensi Bigram}
+
 \begin{enumerate}
-  \item Lakukan penghitungan frekuensi bigram pada \textit{ciphertext}.
-\end{enumerate} 
+  \item Hitung frekuensi bigram \textbf{non-\textit{overlapping}} pada \textit{ciphertext}
+  (\texttt{Solver.freq\_bigram} pada \texttt{src/23/solver.py}). Perhitungan ini dilakukan 
+  pada \textit{ciphertext} \textbf{sebelum} dilakukan substitusi
+  apa pun, sehingga hasilnya tidak berubah walau hipotesis matriks kunci diubah-ubah. Terdapat
+  \textbf{392} bigram unik, dengan sepuluh besar sebagai berikut.
+
+  \begin{center}
+    \small
+    \begin{tabular}{|c|c|c||c|c|}
+      \hline
+      \multicolumn{5}{|c|}{Bigram (non-\textit{overlapping})} \\
+      \hline
+      Peringkat & Cipher & Freq (\%) & Referensi & Freq (\%) \\
+      \hline
+      1  & BF & 3.24 & TH & 3.56 \\
+      2  & UA & 1.95 & HE & 3.07 \\
+      3  & GB & 1.87 & IN & 2.43 \\
+      4  & VT & 1.62 & ER & 2.05 \\
+      5  & TV & 1.60 & AN & 1.99 \\
+      6  & YA & 1.45 & RE & 1.85 \\
+      7  & IA & 1.34 & ON & 1.76 \\
+      8  & DS & 1.22 & AT & 1.49 \\
+      9  & ID & 1.22 & EN & 1.45 \\
+      10 & QL & 1.21 & ND & 1.35 \\
+      \hline
+    \end{tabular}
+  \end{center}
+
+  \item Susun hipotesis awal dari empat pencocokan berikut:
+
+  \begin{center}
+    \small
+    \begin{tabular}{|c|c|c|c|}
+      \hline
+      Cipher & Freq (\%) & Dugaan \textit{Plain} & Dasar Dugaan \\
+      \hline
+      \texttt{BF} & 3.24 & \textbf{TH} & bigram tersering pada kedua sisi \\
+      \texttt{GB} & 1.87 & \textbf{HE} & peringkat 3 cipher vs bigram Inggris tersering kedua \\
+      \texttt{VT} & 1.62 & \textbf{RE} & pasangan resiprokal dengan \texttt{TV} \\
+      \texttt{TV} & 1.60 & \textbf{ER} & pasangan resiprokal dengan \texttt{VT} \\
+      \hline
+    \end{tabular}
+  \end{center}
+
+  \texttt{UA} belum dicocokkan karena cukup sulit memetakan huruf \textit{plain} yang beririsan. 
+  Melanjutkan ke \texttt{VT}/\texttt{TV}, keduanya muncul dengan frekuensi yang mirip, sehingga hipotesis
+  selanjutnya adalah memetakan \texttt{VT}/\texttt{TV} ke \textbf{RE}/\textbf{ER}, karena memang 
+  keduanya merupakan pasangan bolak-balik yang sama-sama sering muncul dalam Bahasa Inggris 
+  (2.05\% dan 1.85\%). Pencocokan \texttt{GB} $\to$ \textbf{HE} juga
+  terverifikasi lewat kemunculan \texttt{BG} $\to$ \textbf{EH}.
+
+  \item Turunkan hubungan posisi antarhuruf dari keempat hipotesis tersebut. Ketiganya ternyata
+  merupakan hubungan \textit{rectangle}, sehingga masing-masing mengunci baris dan kolom relatif
+  antarhuruf:
+
+  \begin{itemize}[nosep]
+    \item \texttt{BF} $\to$ \textbf{TH}: \texttt{B} sebaris dengan \texttt{T}, dan \texttt{F} sebaris dengan \texttt{H}.
+    \item \texttt{GB} $\to$ \textbf{HE}: \texttt{G} sebaris dengan \texttt{H}, dan \texttt{B} sebaris dengan \texttt{E}.
+    \item \texttt{TV} $\to$ \textbf{ER}: \texttt{T} sebaris dengan \texttt{E}, dan \texttt{V} sebaris dengan \texttt{R}.
+  \end{itemize}
+
+  Gabungan ketiganya membentuk blok \texttt{T}-\texttt{E}-\texttt{B} pada satu baris,
+  \texttt{F}-\texttt{G}-\texttt{H} pada baris lain, serta \texttt{R}-\texttt{V} pada baris ketiga, dengan
+  kolom yang saling bersesuaian. Penambahan \texttt{TF} $\to$ \textbf{IT} kemudian menempatkan
+  \texttt{I}. Total \textbf{9 dari 25} sel berhasil ditambatkan secara manual, dan inilah isi
+  \texttt{GRID} pada \texttt{src/23/solver.py}.
+
+  Catatan: hipotesis sempat keliru ketika \texttt{R} dan \texttt{V} diletakkan pada baris
+  yang sama dengan \texttt{T}, \texttt{E}, dan \texttt{B}. Susunan itu memaksa \texttt{BE}
+  (0.88\%) terbaca sebagai \textbf{VB}, sebuah bigram yang praktis tidak muncul dalam Bahasa
+  Inggris. Kontradiksi inilah yang menjadi dasar penolakan hipotesis tersebut.
+\end{enumerate}
+
+Hasil tahap ini adalah hipotesis matriks kunci berikut, dengan sel kosong menandakan posisi yang belum
+dapat disimpulkan dari analisis bigram:
+
+\begin{center}
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+      &   &   &   &   \\
+    \hline
+    I &   &   &   &   \\
+    \hline
+    T & E & B &   &   \\
+    \hline
+    F & G & H &   &   \\
+    \hline
+    R & V &   &   &   \\
+    \hline
+  \end{tabular}
+\end{center}
+
+\subsubsection*{Tahap 2: \textit{Simulated Annealing}}
+
+Melanjutkan tahap 1 secara manual untuk 16 sel sisanya tidak efisien. Seringkali kesalahan posisi satu huruf
+baru ditemukan beberapa langkah kemudian. Karena itu, sisa pencarian diserahkan pada \textit{Simulated Annealing}.
+
+\begin{enumerate}
+  \item Hasil dekripsi dinilai dengan \textbf{fungsi objektif} berupa \textbf{log-probabilitas quadgram}
+  (\texttt{Solver.score}), yaitu
+  \[
+    S = \sum_{i} \log_{10} P(q_i),
+  \]
+  dengan $q_i$ adalah quadgram ke-$i$ (jendela 4 huruf yang saling tumpang-tindih) pada hasil dekripsi.
+  Nilai $P$ diambil dari tabel \texttt{QUADGRAM} pada \texttt{src/frequencies.py} (\textit{quadgram} yang tidak
+  terdaftar diberi nilai dasar $0.001$ sebagai penalti). \textit{Quadgram}dipilih karena menilai kelayakan
+  rangkaian huruf yang lebih panjang daripada bigram, sehingga lebih tegas membedakan teks Inggris dari
+  teks acak.
+
+  \item Satu langkah dilakukan dengan menukar isi dua sel bebas secara acak
+  (\texttt{Solver.swap}). Penukaran antarbaris atau antarkolom penuh hanya diaktifkan bila seluruh sel
+  bebas, karena operasi tersebut akan menggeser sel-sel yang sudah dikunci.
+
+  \item Solusi tetangga dengan skor lebih tinggi selalu diterima. Kemudian, solusi yang lebih buruk tetap 
+  diterima dengan peluang $\exp(\Delta S / T)$, sehingga pencarian dapat keluar
+  dari optimum lokal. Suhu awal $T = 20$ diturunkan bertahap sebesar $0.5$ hingga mencapai $0$, dengan
+  $2500$ percobaan pada tiap tingkat suhu (total $\pm 100.000$ evaluasi per \textit{restart}). Proses ini
+  diulang sebanyak 2 \textit{restart}, dan skor terbaiklah yang akan dipakai.
+
+  \item Selama pencarian, penilaian hanya dilakukan pada \textbf{2400 karakter pertama} \textit{ciphertext}. 
+  Ukuran ini sudah cukup untuk membedakan kunci benar dari kunci salah,
+  namun memangkas waktu secara signifikan. Dekripsi penuh baru dijalankan sekali di akhir
+  memakai kunci terbaik.
+\end{enumerate}
+
+\subsubsection*{Hasil}
+
+Pencarian konvergen ke skor $-6877.2$ dengan waktu eksekusi sekitar \textbf{2 menit 30 detik}, dan
+menghasilkan pemetaan lengkap untuk seluruh \textbf{392} bigram unik. Pengujian berulang memberi kunci
+yang sama secara konsisten.
+
+Perlu dicatat bahwa penguncian sembilan sel hasil tahap 1 sangat menentukan. Ketika seluruh 25 sel
+dibiarkan bebas, pencarian dengan jumlah \textit{restart} yang sama kerap berhenti pada optimum lokal
+(misalnya pada skor $-7098.3$) dengan hasil dekripsi yang tidak terbaca. Dengan kata lain, analisis manual
+dan pencarian otomatis saling melengkapi: analisis manual memperkecil ruang pencarian dari 25 sel menjadi
+16 sel, sementara SA menyelesaikan bagian sisanya.
 
 \subsection*{Artefak}
 
+Skrip \textit{solver} yang digunakan untuk menghitung frekuensi bigram \textit{ciphertext}, menjalankan
+\textit{Simulated Annealing} untuk melengkapi matriks kunci, menurunkan pemetaan bigram
+\textit{cipher}$\to$\textit{plain} berdasarkan aturan Playfair, mendekripsi \textit{ciphertext}, serta
+mencatat setiap hasil dekripsi ke \texttt{log/plain/} dan metadatanya (pemetaan, matriks kunci, frekuensi
+bigram, dan skor akhir) ke \texttt{log/metadata/}.
+
+\lstinputlisting[language=Python, basicstyle=\ttfamily\small, frame=single,
+  title=\texttt{src/23/solver.py}]{../../src/23/solver.py}
+
 \subsection*{\textit{Plaintext} Hasil Dekripsi}
+
+\ciphertextfile{../../src/23/log/plain/2026-09-15_171115.txt}
 
 \subsection*{Kunci}
 
+Matriks kunci $5 \times 5$ hasil rekonstruksi:
+
+\begin{center}
+  \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    S & Y & M & P & O \\
+    \hline
+    I & U & L & N & A \\
+    \hline
+    T & E & B & C & D \\
+    \hline
+    F & G & H & K & Q \\
+    \hline
+    R & V & W & X & Z \\
+    \hline
+  \end{tabular}
+\end{center}
+
+Susunan ini mengikuti pola pembentukan kunci Playfair pada umumnya: deretan kata kunci
+\texttt{SYMPOIULNATE} di awal, lalu dilanjutkan sisa alfabet secara berurutan
+(\texttt{BCDFGHKQRVWXZ}). Keteraturan tersebut menjadi bukti tambahan bahwa kunci yang ditemukan memang
+kunci asli, bukan sekadar kunci yang kebetulan berskor tinggi.
+
 \subsection*{Referensi}
+
+Tabel referensi frekuensi bigram Bahasa Inggris yang digunakan pada Tahap 1 mengacu pada
+\cite{cornell-freq, case-ngram}. Tabel \texttt{QUADGRAM} yang dipakai sebagai fungsi objektif pada
+Tahap 2 disusun dari 45 \textit{quadgram} tersering pada berkas statistik \texttt{english\_quadgrams.txt}
+\cite{quadgram-data}, dengan nilai persentase dihitung terhadap total kemunculan seluruh
+\textit{quadgram} pada berkas tersebut.
