@@ -32,10 +32,60 @@ artikel terungkap.
 
 \subsection*{Langkah Penyelesaian}
 
+\textit{Hill cipher} mudah dipecahkan dengan \textit{known-plaintext attack}.
+Berdasarkan petunjuk yang diberikan, 14 karakter pertama dari \textit{plaintext} adalah \textbf{``EXPLOSIVESCOOP''}. 
+Misalkan untuk \textit{Hill cipher} dengan $m = 3$ diketahui:
+\begin{itemize}[nosep]
+    \item $P = (4, 23, 15) \to C = (21, 13, 20)$ (dari blok ``EXP'' $\to$ ``VNU'')
+    \item $P = (11, 14, 18) \to C = (4, 23, 6)$ (dari blok ``LOS'' $\to$ ``EXG'')
+    \item $P = (8, 21, 4) \to C = (12, 12, 23)$ (dari blok ``IVE'' $\to$ ``MMX'')
+    \item Jadi, $K(4, 23, 15) = (21, 13, 20)$, $K(11, 14, 18) = (4, 23, 6)$, dan $K(8, 21, 4) = (12, 12, 23)$
+\end{itemize}
+
+\begin{equation*}
+\begin{pmatrix} 21 & 4 & 12 \\ 13 & 23 & 12 \\ 20 & 6 & 23 \end{pmatrix}
+= K
+\begin{pmatrix} 4 & 11 & 8 \\ 23 & 14 & 21 \\ 15 & 18 & 4 \end{pmatrix} \pmod{26}
+\quad \to K = C P^{-1} \pmod{26}
+\end{equation*}
+
+\begin{itemize}[nosep]
+    \item Matriks balikan dari $P$ adalah $P^{-1} = \begin{pmatrix} 4 & 11 & 8 \\ 23 & 14 & 21 \\ 15 & 18 & 4 \end{pmatrix}^{-1} \pmod{26} = \begin{pmatrix} 8 & 24 & 1 \\ 1 & 0 & 24 \\ 24 & 1 & 25 \end{pmatrix}$
+    \item Sehingga
+\end{itemize}
+
+\begin{equation*}
+K = C P^{-1} \pmod{26} = 
+\begin{pmatrix} 21 & 4 & 12 \\ 13 & 23 & 12 \\ 20 & 6 & 23 \end{pmatrix}
+\begin{pmatrix} 8 & 24 & 1 \\ 1 & 0 & 24 \\ 24 & 1 & 25 \end{pmatrix} \pmod{26}
+= \begin{pmatrix} 18 & 22 & 1 \\ 25 & 12 & 7 \\ 16 & 9 & 11 \end{pmatrix}
+\end{equation*}
+
+Selanjutnya, sisa dari pesan \textit{ciphertext} didekripsi secara langsung menggunakan matriks balikan (invers) dari $K$.
+
+\subsection*{Langkah-langkah Dekripsi}
+
+Berikut adalah rincian langkah dekripsi untuk tiap blok karakter (Total 134 blok) menjadi vektor numerik, dikali dengan invers matriks kunci modulo 26, lalu dikembalikan ke bentuk teks:
+
+\input{../../src/25/table.tex}
+
 \subsection*{Artefak}
+
+Skrip \textit{solver} yang mengimplementasikan pencarian invers matriks secara modular dengan \textit{Known Plaintext Attack} (KPA) pada bahasa pemrograman Python (\texttt{src/25/solver.py}). Skrip ini secara otomatis memecah teks menjadi blok $m=3$ dan melakukan proses matriks balikan (\textit{decryption}). Log penyelesaian (metadata kunci dan \textit{plaintext}) disimpan di \texttt{src/25/log}.
 
 \subsection*{\textit{Plaintext} Hasil Dekripsi}
 
+\plainfile{../../src/25/log/plain/2026-09-17_201130.txt}
+
 \subsection*{Kunci}
 
+Matriks Kunci ($K$):
+\begin{equation*}
+\begin{pmatrix} 18 & 22 & 1 \\ 25 & 12 & 7 \\ 16 & 9 & 11 \end{pmatrix}
+\end{equation*}
+
 \subsection*{Referensi}
+
+\begin{itemize}[nosep]
+    \item Slide Kuliah IF4020 Kriptografi: Kriptografi Klasik Bagian 2 (Materi \textit{Hill Cipher} dan \textit{Known-Plaintext Attack}).
+\end{itemize}
