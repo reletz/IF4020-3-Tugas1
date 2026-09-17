@@ -28,10 +28,38 @@ Attack}}.
 
 \subsection*{Langkah Penyelesaian}
 
+Tahap awal analisis adalah menentukan frekuensi kemunculan setiap karakter pada \textit{ciphertext}. Karakter yang paling sering muncul diasumsikan berkorespondensi dengan huruf yang paling sering muncul dalam bahasa Inggris, yakni 'E' dan 'T'. Dua karakter dengan frekuensi tertinggi pada teks ini adalah 'U' dan 'M'. Percobaan awal dilakukan dengan memetakan 'U' $\to$ 'E' dan 'M' $\to$ 'T' untuk mencari sepasang nilai kunci $m$ dan $b$. Namun, persamaan kongruensi linear yang dihasilkan dari pemetaan ini tidak menghasilkan nilai pengali $m$ yang relatif prima (\textit{coprime}) terhadap modulus 26, sehingga ditolak.
+
+Pendekatan penyelesaian kemudian dialihkan menggunakan metode \textbf{\textit{Brute-Force Fallback}}. 
+
+Dalam sandi \textit{Affine}, parameter $m$ harus relatif prima dengan 26 agar setiap karakter memiliki pemetaan balik yang unik. Hanya ada 12 nilai $m$ yang memenuhi kondisi ini pada $\mathbb{Z}_{26}$ (yaitu 1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25). Di sisi lain, konstanta pergeseran $b$ dapat berupa nilai bulat apa pun dari 0 hingga 25. Dengan demikian, total keseluruhan kombinasi kunci hanyalah $12 \times 26 = 312$ kemungkinan.
+
+Langkah pencarian \textit{brute-force} yang dilakukan adalah:
+\begin{enumerate}
+  \item Untuk setiap 312 kemungkinan pasangan $(m, b)$, dekripsikan \textit{ciphertext} menggunakan \textit{Affine Cipher}.
+  \item Hitung skor kelayakan dari setiap teks hasil dekripsi menggunakan nilai frekuensi kemunculan \textit{bigram}, \textit{trigram}, dan \textit{quadgram} dalam korpus bahasa Inggris standar (\texttt{BIGRAM}, \texttt{TRIGRAM}, \texttt{QUADGRAM} pada \texttt{src/frequencies.py}).
+  \item Peringkatkan setiap kombinasi kunci berdasarkan total skor yang diperoleh.
+\end{enumerate}
+
+Pasangan kunci yang menghasilkan teks dengan kecocokan \textit{n-gram} tertinggi dan membentuk \textit{plaintext} yang bisa dibaca adalah $m = 15$ dan $b = 12$.
+
 \subsection*{Artefak}
+
+Skrip \textit{solver} yang digunakan untuk melakukan dekripsi dengan percobaan heuristik \textit{known-plaintext} berdasarkan frekuensi karakter dan \textit{brute-force fallback}.
+
+\lstinputlisting[language=Python, basicstyle=\ttfamily\small, frame=single,
+  title=\texttt{src/24/solver.py}]{../../src/24/solver.py}
 
 \subsection*{\textit{Plaintext} Hasil Dekripsi}
 
+\ciphertextfile{../../src/24/log/plain/2026-09-17_135507.txt}
+
 \subsection*{Kunci}
 
+Kunci perkalian (\textit{multiplier}) $m$: \textbf{15}
+
+Kunci pergeseran (\textit{shift}) $b$: \textbf{12}
+
 \subsection*{Referensi}
+
+Tabel \textit{n-gram} bahasa Inggris bersumber dari \cite{case-ngram} dan \cite{quadgram-data}. Referensi mengenai konsep dasar dan implementasi dekripsi algoritma \textit{Affine Cipher} mengacu pada \cite{affine-gfg}.
