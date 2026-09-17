@@ -5,9 +5,25 @@ from datetime import datetime
 from typing import Dict, List, Tuple
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from frequencies import MONOGRAM, MONOGRAM_ORDER
+from frequencies import BIGRAM, TRIGRAM, QUADGRAM
 
 class AffineSolver:
+    def calculate_fitness(self, text: str) -> float:
+        score = 0.0
+        for i in range(len(text) - 1):
+            bg = text[i:i+2]
+            if bg in BIGRAM:
+                score += BIGRAM[bg]
+        for i in range(len(text) - 2):
+            tg = text[i:i+3]
+            if tg in TRIGRAM:
+                score += TRIGRAM[tg]
+        for i in range(len(text) - 3):
+            qg = text[i:i+4]
+            if qg in QUADGRAM:
+                score += QUADGRAM[qg]
+        return score
+
     def count(self, string: str) -> Dict:
         data = {}
         for c in string:
@@ -74,7 +90,7 @@ class AffineSolver:
         for m in possible_m:
             for b in range(26):
                 decrypted = self.decrypt(string, m, b)
-                score = sum(decrypted.count(c) for c in "ETAOIN")
+                score = self.calculate_fitness(decrypted)
                 results.append((score, m, b, decrypted))
         
         return sorted(results, key=lambda x: x[0], reverse=True)
@@ -130,7 +146,7 @@ if __name__ == "__main__":
         results = solver.brute_force_fallback(content)
         top_result = results[0]
         m, b = top_result[1], top_result[2]
-        print(f"Hasil terbaik dari brute-force: m = {m}, b = {b} (Skor: {top_result[0]})")
+        print(f"Hasil terbaik dari brute-force: m = {m}, b = {b}")
         decrypted = solver.decrypt(content, m, b)
         print("Preview hasil dekripsi:")
         print(decrypted[:100] + "...")
