@@ -28,10 +28,67 @@ isi naskah.
 
 \subsection*{Langkah Penyelesaian}
 
+\textbf{Vigen\`ere \textit{Cipher}} rentan terhadap analisis \textbf{\textit{Kasiski Examination}} jika kunci yang digunakan relatif pendek. Metode ini mengasumsikan bahwa pengulangan rangkaian karakter (\textit{substring}) pada \textit{ciphertext} terjadi ketika \textit{substring plaintext} yang sama dienkripsi menggunakan bagian kunci yang sama. 
+
+Penyelesaian soal ini dibagi menjadi dua tahap: \textbf{identifikasi panjang kunci} dengan \textit{Kasiski Examination}, lalu \textbf{pencarian kunci} dengan \textit{Frequency Analysis} bahasa Inggris.
+
+\subsubsection*{Tahap 1: \textit{Kasiski Examination}}
+
+\begin{enumerate}
+  \item Cari semua rangkaian karakter yang berulang pada \textit{ciphertext} dengan panjang minimal 3 karakter (\texttt{VigenereSolver.find\_repeated\_sequences} pada \texttt{src/22/solver.py}).
+  \item Hitung jarak antarkemunculan dari masing-masing \textit{substring} berulang tersebut.
+  \item Cari faktor dari setiap jarak tersebut dan hitung frekuensi kemunculan setiap faktor (\texttt{VigenereSolver.get\_kasiski\_factors}). Faktor yang paling sering muncul berpeluang besar merupakan panjang kunci atau kelipatannya.
+\end{enumerate}
+
+Hasil pencarian jarak dan pemfaktoran menunjukkan beberapa faktor yang dominan:
+
+\begin{center}
+  \small
+  \begin{tabular}{|c|c|}
+    \hline
+    Faktor & Frekuensi Muncul \\
+    \hline
+    2 & 2144 \\
+    5 & 1898 \\
+    10 & 1866 \\
+    4 & 1014 \\
+    20 & 888 \\
+    \hline
+  \end{tabular}
+\end{center}
+
+Tiga faktor teratas yang paling sering muncul berturut-turut adalah 2, 5, dan 10. Mengambil nilai maksimum dari sekumpulan faktor dengan frekuensi tertinggi ini memberikan tebakan panjang kunci yang sangat meyakinkan, yaitu \textbf{10}.
+
+\subsubsection*{Tahap 2: \textit{Frequency Analysis}}
+
+Setelah panjang kunci $L=10$ diketahui, \textit{ciphertext} dapat dibagi menjadi $L$ bagian (\textit{sub-text}), di mana \textit{sub-text} ke-$i$ berisi huruf-huruf pada posisi $i, i+L, i+2L, \dots$ dari \textit{ciphertext}. Karena setiap \textit{sub-text} dienkripsi dengan satu karakter kunci yang konstan, \textit{cipher} ini dapat dipandang sebagai gabungan $L$ buah sandi \textbf{Caesar \textit{Cipher}}.
+
+\begin{enumerate}
+  \item Untuk setiap \textit{sub-text}, hitung frekuensi kemunculan hurufnya.
+  \item Lakukan uji coba pergeseran (\textit{shift}) dari 0 hingga 25.
+  \item Untuk setiap pergeseran, hitung \textit{dot product} antara frekuensi huruf yang dihasilkan dengan probabilitas frekuensi huruf tunggal (\textit{monogram}) bahasa Inggris (\texttt{MONOGRAM} pada \texttt{src/frequencies.py}).
+  \item Pilih pergeseran dengan nilai \textit{dot product} terbesar sebagai huruf ke-$i$ dari kunci (\texttt{VigenereSolver.guess\_key}).
+\end{enumerate}
+
+Berdasarkan analisis tersebut, kunci sepanjang 10 karakter berhasil ditebak, yaitu \textbf{\texttt{UNDERNIGHT}}.
+
 \subsection*{Artefak}
+
+Skrip \textit{solver} yang digunakan untuk melakukan \textit{Kasiski Examination}, menemukan kunci dengan analisis frekuensi, mendekripsi \textit{ciphertext}, serta menyimpannya ke berkas log.
+
+\lstinputlisting[language=Python, basicstyle=\ttfamily\small, frame=single,
+  title=\texttt{src/22/solver.py}]{../../src/22/solver.py}
 
 \subsection*{\textit{Plaintext} Hasil Dekripsi}
 
+\ciphertextfile{../../src/22/log/plain/2026-09-17_132724.txt}
+
 \subsection*{Kunci}
 
+Panjang kunci: \textbf{10}
+
+Kunci hasil rekonstruksi: \textbf{\texttt{UNDERNIGHT}}
+
 \subsection*{Referensi}
+
+Tabel frekuensi \textit{monogram} bahasa Inggris yang digunakan pada Tahap 2 mengacu pada \cite{cornell-freq}. Referensi mengenai konsep dasar dekripsi Vigen\`ere \textit{Cipher} mengacu pada \cite{vigenere-gfg}.
