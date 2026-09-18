@@ -38,15 +38,254 @@ sebelum \textit{hollow night} berakhir.
 \end{tcolorbox}
 
 \subsection*{Analisis Modifikasi Mesin}
+Ketika zip diekstrak dan Makefile dijalankan, terdapat dua \textit{executables} yang dihasilkan, yakni \texttt{machine} dan \texttt{encode}.
+
+\begin{center}
+  \includegraphics[width=0.45\linewidth]{31_ls.png}
+\end{center}
+
+Untuk setiap \textit{header} (\texttt{*.h}) dan \textit{kode} (\texttt{*.c}) berkoresponden pada komponen asli dari 
+Enigma Machine M3, yakni sebagai berikut:
+
+\begin{enumerate}
+  \item \textit{Plugboard} (\texttt{plugboard.h} dan \texttt{plugboard.c}): Mensimulasikan \textit{plugboard}
+  (\textit{Steckerbrett}), yakni papan kabel yang menukar pasangan huruf secara dua arah (jika A dihubungkan
+  dengan B, maka A $\to$ B dan B $\to$ A). Huruf yang tidak dihubungkan akan dipetakan ke dirinya sendiri.
+  Pemetaan disimpan pada \texttt{wiring[26]}. Fungsi \texttt{connect()} membentuk pemetaan dari tepat
+  10 pasang huruf, sedangkan \texttt{identity()} menghasilkan \textit{plugboard} tanpa kabel (setiap huruf
+  dipetakan ke dirinya sendiri). \textit{Plugboard} dilewati \textbf{dua kali} dalam satu kali enkripsi
+  karakter, yaitu sebelum sinyal masuk ke rotor dan setelah sinyal kembali dari reflektor.
+
+  \item \textit{Reflector} (\texttt{reflector.h} dan \texttt{reflector.c}): Mensimulasikan reflektor
+  (\textit{Umkehrwalze}), yaitu komponen statis yang memantulkan sinyal kembali melewati rotor dengan
+  pemetaan berpasangan. Di sini, hanya ada \textbf{Reflector B} (\texttt{YRUHQSLDPXNGOKMIEBFZCWVJAT})
+  melalui fungsi \texttt{refl\_b()}. String tersebut berarti A $\to$ Y, B $\to$ R, C $\to$ U, dan
+  seterusnya. Jika dibalik, Y $\to$ A dan R $\to$ B. Jadi, ke-26 huruf dibagi menjadi 13 pasangan
+  (A $\leftrightarrow$ Y, B $\leftrightarrow$ R, C $\leftrightarrow$ U, \dots), dan tidak ada huruf yang
+  dipetakan ke dirinya sendiri (tidak ada A $\to$ A).
+
+  Pemetaan berpasangan ini membuat Enigma ini memiliki dua sifat penting:
+  \begin{itemize}[nosep]
+    \item Enkripsi sama dengan dekripsi. Jika dengan posisi rotor tertentu A dienkripsi menjadi
+    X, maka dengan posisi rotor yang sama X akan dienkripsi menjadi A. Oleh karena itu, untuk mendekripsi
+    pesan cukup memasukkan \textit{ciphertext} ke mesin dengan pengaturan awal yang sama.
+    \item Huruf tidak pernah dienkripsi menjadi dirinya sendiri. Karena reflektor tidak pernah
+    memantulkan huruf ke dirinya sendiri, sinyal selalu kembali melalui jalur yang berbeda sehingga huruf
+    keluaran selalu berbeda dengan huruf masukan.
+  \end{itemize}
+
+  \item \textit{Rotor} (\texttt{rotor.h} dan \texttt{rotor.c}): Mensimulasikan rotor (\textit{Walzen}).
+  \texttt{RotorSpec} menyimpan spesifikasi rotor I--VIII, yaitu \textit{wiring} dan posisi \textit{notch}
+  (I: Q, II: E, III: V, IV: J, V: Z, VI--VIII: M dan Z). \texttt{Rotor} menyimpan \textit{wiring} maju
+  (\texttt{forward\_wiring}), \textit{wiring} balik (\texttt{backward\_wiring}), posisi \textit{notch},
+  \textit{ring setting} (\textit{Ringstellung}), dan posisi rotor (\textit{Grundstellung}). Fungsi-fungsi
+  pentingnya adalah sebagai berikut.
+  \begin{itemize}[nosep]
+    \item \texttt{build()}: membangun rotor dari spesifikasi, \textit{ring setting}, dan posisi awal.
+    \item \texttt{fwd()} dan \texttt{rev()}: memetakan sinyal melewati rotor pada arah maju (menuju
+    reflektor) dan arah balik (dari reflektor). Keduanya memanggil \texttt{map()} yang menggeser masukan
+    sebesar $\mathit{shift} = \mathit{position} - \mathit{ring}$, melewatkannya ke \textit{wiring}, lalu
+    menggeser balik keluarannya.
+    \item \texttt{notch()}: memeriksa apakah rotor sedang berada pada posisi \textit{notch}.
+    \item \texttt{step()}: memutar rotor satu posisi.
+    \item \texttt{get()}: mengambil spesifikasi rotor berdasarkan namanya.
+  \end{itemize}
+
+  Secara fisik, rotor terdiri atas dua bagian, yaitu \textbf{inti kabel} (\textit{wiring}) yang mengacak
+  huruf dan \textbf{cincin huruf} (\textit{ring}) A--Z di sekelilingnya yang juga membawa \textit{notch}.
+  \textit{Ring setting} adalah besar pergeseran \textit{ring} terhadap \textit{wiring}-nya, sedangkan
+  \textit{position} adalah posisi putar rotor saat ini (dinyatakan dengan huruf A--Z). \textit{Ring setting} tetap selama satu
+  pesan, sedangkan \textit{position} berubah setiap kali rotor berputar. Karena
+  $\mathit{shift} = \mathit{position} - \mathit{ring}$, pengacakan sebenarnya bergantung pada
+  \textbf{selisih} keduanya. Contohnya, dengan rotor dan posisi yang sama tetapi \textit{ring} berbeda,
+  hasil enkripsinya berbeda:
+\begin{lstlisting}[language=bash,numbers=none]
+echo AAAAA | ./machine I II III AAA AAA   # BDZGO
+echo AAAAA | ./machine I II III BBB AAA   # EWTYX
+\end{lstlisting}
+
+  Sebaliknya, jika \textit{ring} dan \textit{position} digeser dengan jumlah yang sama, selisihnya tetap
+  sehingga pengacakannya juga sama:
+\begin{lstlisting}[language=bash,numbers=none]
+echo AAAAA | ./machine I II III AAA AAA   # BDZGO
+echo AAAAA | ./machine I II III AAB AAB   # BDZGO
+\end{lstlisting}
+
+  Yang berubah hanyalah \textbf{waktu perputaran} rotor di sebelahnya. \textit{Notch} menempel pada
+  cincin, sehingga \texttt{notch()} memeriksa \texttt{rotor\_position}, bukan posisi \textit{wiring}. Hal ini
+  berdampak pada kriptanalisis:
+  \begin{itemize}[nosep]
+    \item \textit{Ring} rotor kiri tidak perlu dicari. Tidak ada rotor lain di sebelah kiri
+    rotor kiri, sehingga \textit{notch}-nya tidak berpengaruh. Yang penting hanya selisih
+    \textit{position} dan \textit{ring}-nya. Oleh karena itu, \textit{ring} rotor kiri dapat ditetapkan
+    menjadi A dan cukup \textit{position}-nya yang dicari. Pada \textit{plaintext} 2000 huruf, konfigurasi
+    \texttt{AAA AAA} dan \texttt{BAA BAA} menghasilkan \textit{ciphertext} yang identik. Ruang kunci
+    \textit{ring} pun turun dari $26^3$ menjadi $26^2$.
+    \item \textit{Ring} yang salah tetap menghasilkan teks yang sebagian besar benar. Selama
+    selisih \textit{position} dan \textit{ring} benar, hanya waktu perputaran rotor tengah yang meleset.
+    Pada 2000 huruf, konfigurasi \texttt{AAA AAA} dan \texttt{AAB AAB} baru berbeda mulai huruf ke-21,
+    dan secara keseluruhan 1923 dari 2000 huruf (96\%) tetap sama. Oleh karena itu, pencarian dapat
+    dipecah menjadi beberapa tahap: urutan rotor dan \textit{position} dicari terlebih dahulu dengan
+    \textit{ring} AAA, kemudian \textit{ring} rotor kanan dan tengah, lalu \textit{plugboard}. Setiap
+    tahap dinilai menggunakan statistik (menggunakan CI jika mengikuti PPT). Dengan demikian, seluruh kombinasi
+    tidak perlu dicoba sekaligus.
+  \end{itemize}
+
+  \item \textit{Enigma} (\texttt{enigma.h} dan \texttt{enigma.c}): Merangkai seluruh komponen menjadi satu
+  mesin dengan susunan tiga rotor (kiri, tengah, kanan), \textit{plugboard}, dan reflektor.
+  \begin{itemize}[nosep]
+    \item \texttt{rotate()}: mengatur pergerakan rotor sebelum setiap karakter dienkripsi. Rotor kanan
+    selalu berputar, rotor tengah berputar ketika rotor kanan berada pada \textit{notch}, dan ketika rotor
+    tengah berada pada \textit{notch}, rotor tengah dan kiri berputar bersamaan (\textit{double stepping}).
+    \item \texttt{run()}: mengenkripsi satu karakter dengan alur \textit{plugboard} $\to$ rotor kanan
+    $\to$ rotor tengah $\to$ rotor kiri $\to$ reflektor $\to$ rotor kiri $\to$ rotor tengah $\to$ rotor
+    kanan $\to$ \textit{plugboard}.
+    \item \texttt{new()} dan \texttt{plain()}: membuat mesin dengan \textit{plugboard} 10 pasang dan
+    tanpa \textit{plugboard}.
+    \item \texttt{cli()}: mem-\textit{parse} argumen, memvalidasi konfigurasi (rotor tidak boleh dipakai
+    ulang, huruf \textit{plugboard} tidak boleh duplikat), lalu mengenkripsi masukan dari \texttt{stdin}
+    karakter demi karakter. Hanya huruf kapital yang dienkripsi, spasi dan \textit{newline} diteruskan apa
+    adanya tanpa memutar rotor, sedangkan karakter lain menyebabkan program berhenti dengan galat.
+  \end{itemize}
+
+  \item \texttt{machine.c}: Titik masuk program \texttt{machine} yang hanya memanggil \texttt{cli()}.
+  Program ini dapat dijalankan dalam dua bentuk:
+\begin{lstlisting}[language=bash,numbers=none]
+./machine <rotor_kiri> <rotor_tengah> <rotor_kanan> <rings> <positions>
+./machine <rotor_kiri> <rotor_tengah> <rotor_kanan> <rings> <p1> ... <p10> <positions>
+\end{lstlisting}
+
+  \item \texttt{encode.c}: Program pra-pemrosesan \textit{plaintext}, bukan bagian dari mesin Enigma.
+  Program ini mengubah huruf menjadi kapital, membuang karakter selain huruf, lalu memformat keluaran
+  menjadi kelompok 4 huruf dengan 40 huruf per baris. Format ini sama dengan format \texttt{secret.txt}.
+
+  \item \texttt{Makefile}: Mengompilasi \texttt{machine} (dari seluruh berkas komponen Enigma) dan
+  \texttt{encode}.
+\end{enumerate}
 
 \subsection*{Langkah Penyelesaian}
 
+Karena tidak ada petunjuk \textit{plaintext}, serangan yang digunakan adalah \textit{ciphertext-only attack}
+berbasis \textit{Index of Coincidence} (CI). CI mengukur peluang dua huruf yang diambil secara acak dari
+suatu teks bernilai sama:
+\begin{equation*}
+  CI = \frac{\sum_{i=A}^{Z} f_i (f_i - 1)}{N (N - 1)}
+\end{equation*}
+dengan $f_i$ adalah frekuensi huruf ke-$i$ dan $N$ adalah panjang teks. Teks acak memiliki CI sekitar
+$1/26 \approx 0{,}0385$, sedangkan teks bahasa Inggris memiliki CI sekitar $0{,}065$. \textit{Ciphertext}
+soal ini (7089 huruf) memiliki CI $0{,}03864$, yang berarti terlihat acak. Jika \textit{ciphertext}
+didekripsi dengan konfigurasi yang benar, CI hasilnya akan naik mendekati $0{,}065$, sedangkan konfigurasi
+yang salah tetap menghasilkan CI sekitar $0{,}0385$.
+
+Langkah-langkahnya adalah sebagai berikut.
+\begin{enumerate}
+  \item Pilih 3 dari 8 rotor dengan memperhatikan urutan, sehingga
+  terdapat $8 \times 7 \times 6 = 336$ urutan rotor. Setiap urutan memiliki $26^3 = 17.576$ posisi awal,
+  sehingga total terdapat $336 \times 17.576 = 5.905.536$ konfigurasi.
+
+  Pada tahap ini, \textit{ring} ditetapkan AAA dan \textit{plugboard} diasumsikan tidak ada. Alasannya
+  adalah sebagai berikut.
+  \begin{itemize}[nosep]
+    \item Ruang untuk segala kemungkinan kunci terlalu besar untuk dicoba seluruhnya. Mesin ini hanya menerima
+    \textit{plugboard} kosong atau tepat 10 pasang. Banyaknya cara memilih 10 pasang dari 26 huruf adalah
+    \begin{equation*}
+      \frac{26!}{6! \cdot 10! \cdot 2^{10}} = 150.738.274.937.250 \approx 1{,}5 \times 10^{14}.
+    \end{equation*}
+    Jika digabung dengan urutan rotor, posisi, dan \textit{ring} rotor tengah dan kanan ($26^2$), totalnya
+    sekitar $5{,}9 \times 10^6 \times 676 \times 1{,}5 \times 10^{14} \approx 6 \times 10^{23}$
+    konfigurasi. Jumlah ini mustahil dicoba satu per satu. Pencarian yang hanya mencakup rotor dan posisi
+    sudah memakan sekitar 2,5 menit.
+    \item \textit{Ring} yang salah tidak menghalangi pencarian solusi. Seperti dijelaskan pada bagian rotor,
+    \textit{ring} rotor kiri tidak berpengaruh, sedangkan \textit{ring} rotor tengah dan kanan yang salah
+    hanya menggeser waktu perputaran rotor. Sebagian besar teks tetap terdekripsi dengan benar, sehingga CI
+    hasilnya tetap jauh di atas CI teks acak.
+    \item Karena konfigurasi yang mendekati benar sudah menaikkan CI, pencarian dapat dipecah, yakni dengan
+    urutan rotor dan posisi dicari terlebih dahulu, kemudian \textit{ring}, lalu \textit{plugboard}.
+    \item Jika hasil tahap ini sudah menghasilkan teks yang terbaca utuh, tahap \textit{ring} dan 
+    \textit{plugboard} tidak perlu dilakukan (lihat langkah 4).
+  \end{itemize}
+
+  \item \textit{Solver} ditulis dalam bahasa C dan langsung menggunakan kode mesin yang diberikan (\texttt{plain()} dan \texttt{run()}),
+  sehingga perilaku mesin yang disimulasikan sama persis dengan mesin pada soal. Seluruh 7089 huruf
+  \textit{ciphertext} didekripsi untuk setiap konfigurasi, lalu CI hasilnya dihitung. Pencarian
+  diparalelkan per urutan rotor menggunakan OpenMP dan selesai dalam sekitar 2,5 menit pada 16
+  \textit{thread}.
+
+  \item Keluaran \textit{solver} adalah sebagai berikut.
+\begin{lstlisting}[numbers=none]
+Terbaik sejauh ini: rotor I II III posisi TCW CI 0.03868
+Terbaik sejauh ini: rotor I II V posisi VVS CI 0.03873
+Terbaik sejauh ini: rotor I VII V posisi PPE CI 0.03876
+Terbaik sejauh ini: rotor VI II IV posisi KQF CI 0.06838
+
+10 kandidat terbaik:
+ 1. rotor VI   II   IV   posisi KQF CI 0.06838
+ 2. rotor I    VII  V    posisi PPE CI 0.03876
+ 3. rotor II   VII  VIII posisi AOZ CI 0.03876
+ 4. rotor VII  III  I    posisi NBI CI 0.03875
+ 5. rotor III  I    VII  posisi MVX CI 0.03874
+ ...
+\end{lstlisting}
+  Hanya satu konfigurasi yang menonjol, yaitu rotor \textbf{VI II IV} dengan posisi \textbf{KQF} (CI
+  $0{,}06838$). Seluruh konfigurasi lain memiliki CI di bawah $0{,}0388$, atau setara dengan teks acak.
+  CI $0{,}06838$ sudah mendekati CI bahasa Inggris, sehingga \textit{plaintext} dapat dipastikan berbahasa
+  Inggris.
+
+  \item Awalnya, \textit{ring} dan \textit{plugboard} direncanakan untuk dicari pada tahap berikutnya. 
+  Namun, dekripsi dengan rotor VI II IV, \textit{ring} AAA, posisi KQF, dan tanpa \textit{plugboard} 
+  sudah menghasilkan teks bahasa Inggris yang terbaca utuh dari awal hingga akhir, dengan CI $0{,}06838$ 
+  yang sudah mendekati CI bahasa Inggris. Hal ini menunjukkan bahwa kedua asumsi pada langkah 1 benar.
+  \begin{itemize}[nosep]
+    \item Jika \textit{ring} rotor tengah atau kanan salah, akan ada bagian teks yang rusak secara berkala,
+    yaitu setiap kali rotor tengah atau kiri berputar pada waktu yang salah. Pada hasil dekripsi, tidak ada
+    bagian yang rusak.
+    \item Jika \textit{ciphertext} dibuat dengan \textit{plugboard}, dekripsi tanpa \textit{plugboard} akan
+    memasukkan huruf yang salah ke rotor, sehingga sebagian besar huruf hasil dekripsi akan salah dan CI-nya
+    jauh di bawah CI bahasa Inggris. Kenyataannya, seluruh teks terbaca dengan benar.
+  \end{itemize}
+  Oleh karena itu, pencarian \textit{ring} dan \textit{plugboard} tidak diperlukan.
+  Dekripsi akhir dilakukan dengan mesin yang diberikan:
+\begin{lstlisting}[language=bash,numbers=none]
+./machine VI II IV AAA KQF < secret.txt
+\end{lstlisting}
+\end{enumerate}
+
 \subsection*{Artefak}
+
+\textit{Solver} ditulis dalam bahasa C (\texttt{src/31/solver.c}) dan di-\textit{link} langsung dengan 
+kode mesin pada \\ \texttt{src/31/enigma-machine/}. Keluaran \textit{solver} disimpan di
+\texttt{src/31/log/solver\_output.txt}, dan \textit{plaintext} hasil dekripsi disimpan di
+\texttt{src/31/log/plain.txt}.
+\begin{lstlisting}[language=bash,numbers=none]
+cc -O3 -fopenmp -Ienigma-machine solver.c \
+   enigma-machine/{enigma,rotor,plugboard,reflector}.c -o solver
+./solver enigma-machine/secret.txt
+\end{lstlisting}
 
 \subsection*{\textit{Plaintext} Hasil Dekripsi}
 
+\ciphertextfile{../../src/31/log/plain.txt}
+
 \subsection*{Kunci / Konfigurasi}
+
+\begin{itemize}[nosep]
+  \item Reflektor: B
+  \item Urutan rotor (kiri, tengah, kanan): VI, II, IV
+  \item \textit{Ring setting}: AAA
+  \item Posisi awal: KQF
+  \item \textit{Plugboard}: tidak ada
+\end{itemize}
 
 \subsection*{Hasil \textit{Decrypt} Sesuai Format Sumber Asli}
 
+\input{../../src/31/plaintext_formatted.tex}
+
 \subsection*{Referensi}
+
+Konsep mesin Enigma (\textit{plugboard}, rotor, dan reflektor) mengacu pada bahan kuliah \cite{munir-klasik2}.
+Spesifikasi \textit{wiring} rotor I--VIII, posisi \textit{notch}, dan Reflector B yang digunakan untuk
+memverifikasi kode mesin mengacu pada \cite{wiki-enigma-rotor}. Rumus dan nilai acuan \textit{Index of
+Coincidence} mengacu pada \cite{wiki-ic}. Strategi \textit{ciphertext-only attack} bertahap (urutan rotor
+dan posisi terlebih dahulu dengan CI, kemudian \textit{ring}, lalu \textit{plugboard}) mengacu pada
+\cite{gillogly}, sedangkan perhitungan ukuran ruang kunci \textit{plugboard} mengacu pada
+\cite{wiki-enigma}.
