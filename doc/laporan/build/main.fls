@@ -81,6 +81,8 @@ INPUT /usr/share/texmf-dist/tex/latex/booktabs/booktabs.sty
 INPUT /usr/share/texmf-dist/tex/latex/booktabs/booktabs.sty
 INPUT /usr/share/texmf-dist/tex/latex/tools/array.sty
 INPUT /usr/share/texmf-dist/tex/latex/tools/array.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/longtable.sty
+INPUT /usr/share/texmf-dist/tex/latex/tools/longtable.sty
 INPUT /usr/share/texmf-dist/tex/latex/lipsum/lipsum.sty
 INPUT /usr/share/texmf-dist/tex/latex/lipsum/lipsum.sty
 INPUT /usr/share/texmf-dist/tex/latex/l3packages/l3keys2e/l3keys2e.sty
@@ -345,6 +347,8 @@ INPUT /usr/share/texmf-dist/tex/latex/grfext/grfext.sty
 INPUT /usr/share/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 INPUT /usr/share/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 INPUT /usr/share/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+INPUT /usr/share/texmf-dist/tex/latex/caption/ltcaption.sty
+INPUT /usr/share/texmf-dist/tex/latex/caption/ltcaption.sty
 INPUT build/main.out
 INPUT build/main.out
 INPUT build/main.out
@@ -451,6 +455,9 @@ INPUT ./contents/03-horizon-chartreuse.tex
 INPUT ./contents/03-horizon-chartreuse.tex
 INPUT contents/03-horizon-chartreuse.tex
 INPUT ../../src/22/v.txt
+INPUT ../../src/22/solver.py
+INPUT ../../src/22/solver.py
+INPUT ../../src/22/solver.py
 INPUT ./contents/04-domain-of-hopes-and-dreams.tex
 INPUT ./contents/04-domain-of-hopes-and-dreams.tex
 INPUT contents/04-domain-of-hopes-and-dreams.tex
@@ -465,10 +472,17 @@ INPUT ./contents/05-trinitarian-rhapsody.tex
 INPUT ./contents/05-trinitarian-rhapsody.tex
 INPUT contents/05-trinitarian-rhapsody.tex
 INPUT ../../src/24/t.txt
+INPUT ../../src/24/solver.py
+INPUT ../../src/24/solver.py
+INPUT ../../src/24/solver.py
 INPUT ./contents/06-silent-goddess.tex
 INPUT ./contents/06-silent-goddess.tex
 INPUT contents/06-silent-goddess.tex
 INPUT ../../src/25/h.txt
+INPUT ../../src/25/table.tex
+INPUT ../../src/25/table.tex
+INPUT ../../src/25/table.tex
+INPUT ../../src/25/log/plain/2026-09-17_201130.txt
 INPUT ./contents/07-ex-machina.tex
 INPUT ./contents/07-ex-machina.tex
 INPUT contents/07-ex-machina.tex
@@ -487,7 +501,9 @@ INPUT /usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb
 INPUT /usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb
 INPUT /usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb
 INPUT /usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
+INPUT /usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb
 INPUT /usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb
+INPUT /usr/share/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb
 INPUT /usr/share/texmf-dist/fonts/type1/public/cm-super/sfbi1000.pfb
 INPUT /usr/share/texmf-dist/fonts/type1/public/cm-super/sfbi1200.pfb
 INPUT /usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx0800.pfb
