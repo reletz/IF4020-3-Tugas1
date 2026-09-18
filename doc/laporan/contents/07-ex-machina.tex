@@ -262,6 +262,9 @@ cc -O3 -fopenmp -Ienigma-machine solver.c \
 ./solver enigma-machine/secret.txt
 \end{lstlisting}
 
+\lstinputlisting[language=C, basicstyle=\ttfamily\small, frame=single,
+  title=\texttt{src/31/solver.c}]{../../src/31/solver.c}
+
 \subsection*{\textit{Plaintext} Hasil Dekripsi}
 
 \ciphertextfile{../../src/31/log/plain.txt}
@@ -287,5 +290,5 @@ Spesifikasi \textit{wiring} rotor I--VIII, posisi \textit{notch}, dan Reflector 
 memverifikasi kode mesin mengacu pada \cite{wiki-enigma-rotor}. Rumus dan nilai acuan \textit{Index of
 Coincidence} mengacu pada \cite{wiki-ic}. Strategi \textit{ciphertext-only attack} bertahap (urutan rotor
 dan posisi terlebih dahulu dengan CI, kemudian \textit{ring}, lalu \textit{plugboard}) mengacu pada
-\cite{gillogly}, sedangkan perhitungan ukuran ruang kunci \textit{plugboard} mengacu pada
+\cite{munir-klasik2}, sedangkan perhitungan ukuran ruang kunci \textit{plugboard} mengacu pada
 \cite{wiki-enigma}.

@@ -37,7 +37,8 @@ Penyelesaian soal ini dibagi menjadi dua tahap: \textbf{identifikasi panjang kun
 \begin{enumerate}
   \item Cari semua rangkaian karakter yang berulang pada \textit{ciphertext} dengan panjang minimal 3 karakter (\texttt{VigenereSolver.find\_repeated\_sequences} pada \texttt{src/22/solver.py}).
   \item Hitung jarak antarkemunculan dari masing-masing \textit{substring} berulang tersebut.
-  \item Cari faktor dari setiap jarak tersebut dan hitung frekuensi kemunculan setiap faktor (\texttt{VigenereSolver.get\_kasiski\_factors}). Faktor yang paling sering muncul berpeluang besar merupakan panjang kunci atau kelipatannya.
+  \item Cari faktor dari setiap jarak tersebut dan hitung frekuensi kemunculan setiap faktor \\
+  (\texttt{VigenereSolver.get\_kasiski\_factors}). Faktor yang paling sering muncul berpeluang besar merupakan panjang kunci atau kelipatannya.
 \end{enumerate}
 
 Hasil pencarian jarak dan pemfaktoran menunjukkan beberapa faktor yang dominan:
